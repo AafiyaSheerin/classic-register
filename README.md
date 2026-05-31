@@ -1,7 +1,7 @@
 # Classic Register ERP
 A full-stack ERP system built for small embroidery businesses to manage employees, attendance, leaves, overtime, and salary.
 
-## 🌐 Live Demo
+##  Live Demo
 👉 [https://aafiyasheerin.github.io/classic-register](https://aafiyasheerin.github.io/classic-register)
 
 **Demo Credentials:**
@@ -16,17 +16,17 @@ A full-stack ERP system built for small embroidery businesses to manage employee
 | Database | MySQL |
 | Hosting | GitHub Pages + Render + Clever Cloud |
 
-## ✨ Features
-- 🔐 Admin & Employee login system
-- 📊 Dashboard with attendance stats
-- 👷 Employee management (Add/Edit/Delete)
-- 📅 Daily attendance tracking
-- 🏖️ Leave management (Apply/Approve/Reject)
-- ⏰ Overtime tracking
-- 💰 Dynamic salary calculation
-- 🧾 Payslip generation
+## Features
+- Admin & Employee login system
+- Dashboard with attendance stats
+- Employee management (Add/Edit/Delete)
+- Daily attendance tracking
+- Leave management (Apply/Approve/Reject)
+- Overtime tracking
+- Dynamic salary calculation
+- Payslip generation
 
-## 🚀 Run Locally
+## Run Locally
 ```bash
 # Clone the repo
 git clone https://github.com/AafiyaSheerin/classic-register.git
@@ -42,7 +42,7 @@ npm install
 npm run dev
 ```
 
-## 📁 Project Structure
+## Project Structure
 ```
 classic-register/
 ├── backend/          # Express API
