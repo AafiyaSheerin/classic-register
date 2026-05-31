@@ -1,13 +1,6 @@
 # Classic Register ERP
 A full-stack ERP system built for small embroidery businesses to manage employees, attendance, leaves, overtime, and salary.
 
-##  Live Demo
-[https://aafiyasheerin.github.io/classic-register](https://aafiyasheerin.github.io/classic-register)
-
-**Demo Credentials:**
-- Admin: `admin` / `admin123`
-- Employee: `EMP001` / `9876543210`
-
 ## Tech Stack
 | Layer | Technology |
 |---|---|
