@@ -8,7 +8,10 @@ const PORT = process.env.PORT || 5000;
 
 app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: [
+  'http://localhost:5173',
+  'https://aafiyasheerin.github.io'
+],
   credentials: true,
 }));
 app.use(express.json({ limit: '5mb' }));
@@ -18,7 +21,10 @@ app.use((req, _res, next) => {
   console.log(`${new Date().toISOString().slice(11,19)} ${req.method.padEnd(6)} ${req.path}`);
   next();
 });
-
+// Health check route
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', message: 'Classic Register API is running!' });
+});
 app.use('/api/auth',       require('./routes/auth'));
 app.use('/api/employees',  require('./routes/employees'));
 app.use('/api/attendance', require('./routes/attendance'));
