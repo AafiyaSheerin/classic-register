@@ -1,5 +1,4 @@
-CREATE DATABASE IF NOT EXISTS classic_register CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE classic_register;
+
 
 CREATE TABLE IF NOT EXISTS users (
   id            INT          PRIMARY KEY AUTO_INCREMENT,
