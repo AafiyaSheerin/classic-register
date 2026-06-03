@@ -41,6 +41,7 @@ router.post('/', async (req, res) => {
     const {
       employee_id, name, role, department = 'Embroidery',
       phone, email, address, salary_type, base_pay, join_date,
+      login_enabled = false,
     } = req.body;
 
     if (!employee_id || !name || !role || !salary_type || !base_pay || !join_date)
@@ -53,11 +54,12 @@ router.post('/', async (req, res) => {
 
     const [result] = await db.query(
       `INSERT INTO employees
-        (employee_id,name,role,department,phone,email,address,salary_type,base_pay,join_date)
-       VALUES (?,?,?,?,?,?,?,?,?,?)`,
+        (employee_id,name,role,department,phone,email,address,salary_type,base_pay,join_date,login_enabled)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
       [employee_id, name, role, department,
        phone||null, email||null, address||null,
-       salary_type, base_pay, join_date]
+       salary_type, base_pay, join_date,
+       login_enabled ? 1 : 0]
     );
     const [[emp]] = await db.query('SELECT * FROM employees WHERE id = ?', [result.insertId]);
     return ok(res, emp, 'Employee created.', 201);
@@ -75,15 +77,18 @@ router.put('/:id', async (req, res) => {
     const {
       name, role, department, phone, email,
       address, salary_type, base_pay, join_date, status,
+      login_enabled,
     } = req.body;
 
     await db.query(
       `UPDATE employees
        SET name=?,role=?,department=?,phone=?,email=?,address=?,
-           salary_type=?,base_pay=?,join_date=?,status=?,updated_at=NOW()
+           salary_type=?,base_pay=?,join_date=?,status=?,login_enabled=?,updated_at=NOW()
        WHERE id=?`,
       [name, role, department, phone||null, email||null, address||null,
-       salary_type, base_pay, join_date, status||'active', req.params.id]
+       salary_type, base_pay, join_date, status||'active',
+       login_enabled ? 1 : 0,
+       req.params.id]
     );
     const [[emp]] = await db.query('SELECT * FROM employees WHERE id = ?', [req.params.id]);
     return ok(res, emp, 'Employee updated.');

@@ -24,6 +24,7 @@ const EMPTY_FORM = {
   employee_id: '', name: '', role: '', department: 'Embroidery',
   phone: '', email: '', address: '',
   salary_type: 'monthly', base_pay: '', join_date: '', status: 'active',
+  login_enabled: false,
 };
 
 export function Employees({ toast }) {
@@ -80,6 +81,7 @@ export function Employees({ toast }) {
       base_pay: String(emp.base_pay),
       join_date: emp.join_date?.split('T')[0] || '',
       status: emp.status,
+      login_enabled: !!emp.login_enabled,
     });
     setShowModal(true);
   }
@@ -142,6 +144,12 @@ export function Employees({ toast }) {
       cell: ({ getValue }) => <Badge status={getValue()} />,
     },
     {
+      accessorKey: 'login_enabled', header: 'Login',
+      cell: ({ getValue }) => (
+        <Badge status={getValue() ? 'active' : 'inactive'} label={getValue() ? 'Enabled' : 'Disabled'} />
+      ),
+    },
+    {
       id: 'actions', header: 'Actions',
       cell: ({ row: { original: r } }) => (
         <div style={{ display: 'flex', gap: 6 }}>
@@ -199,6 +207,39 @@ export function Employees({ toast }) {
             <Select label="Status" value={form.status} onChange={set('status')} options={STATUS_OPTS} />
           )}
         </div>
+
+        {/* Login Enable Toggle — shown for both new and edit */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          marginTop: 16, padding: '12px 14px',
+          background: C.primaryLight, borderRadius: 8,
+        }}>
+          <div
+            onClick={() => setForm(f => ({ ...f, login_enabled: !f.login_enabled }))}
+            style={{
+              width: 44, height: 24, borderRadius: 12, cursor: 'pointer',
+              background: form.login_enabled ? C.primary : '#ccc',
+              position: 'relative', transition: 'background 0.2s',
+              flexShrink: 0,
+            }}
+          >
+            <div style={{
+              position: 'absolute', top: 3, left: form.login_enabled ? 23 : 3,
+              width: 18, height: 18, borderRadius: '50%',
+              background: '#fff', transition: 'left 0.2s',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+            }} />
+          </div>
+          <div>
+            <div style={{ fontWeight: 600, fontSize: 14 }}>Enable Employee Login</div>
+            <div style={{ fontSize: 12, color: C.muted }}>
+              {form.login_enabled
+                ? 'Employee can log in using their ID and phone number'
+                : 'Employee cannot log in to the portal'}
+            </div>
+          </div>
+        </div>
+
         <div style={{ display: 'flex', gap: 10, marginTop: 22, justifyContent: 'flex-end' }}>
           <Btn variant="ghost" onClick={() => setShowModal(false)}>Cancel</Btn>
           <Btn onClick={handleSave} disabled={saveMut.isPending}>
