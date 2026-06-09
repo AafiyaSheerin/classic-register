@@ -24,14 +24,13 @@ async function fetchAttendance(empId, m, y) {
 async function fetchOvertime(empId, m, y) {
   const [[row]] = await db.query(
     `SELECT
-       COALESCE(SUM(hours),0)             AS total_ot_hours,
-       COALESCE(SUM(pieces_completed),0)  AS total_ot_pieces,
-       COALESCE(AVG(rate_multiplier),1.5) AS avg_rate_multiplier
+       COALESCE(SUM(hours),0)            AS total_ot_hours,
+       COALESCE(SUM(pieces_completed),0) AS total_ot_pieces
      FROM overtime
      WHERE employee_id=? AND MONTH(date)=? AND YEAR(date)=?`,
     [empId, m, y]
   );
-  return row;
+  return { ...row, avg_rate_multiplier: 1.5 };
 }
 
 async function fetchPieces(empId, m, y) {
