@@ -1,6 +1,6 @@
 // routes/overtime.js — custom amount, no fixed rate
 const router = require('express').Router();
-const pool   = require('../config/db');
+const pool = require('../db/connection');
 const { authenticate } = require('../middleware/auth');
 
 // GET all overtime records

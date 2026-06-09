@@ -1,6 +1,6 @@
 // routes/extratime.js
 const router = require('express').Router();
-const pool   = require('../config/db');
+const pool = require('../db/connection');
 const { authenticate } = require('../middleware/auth');
 
 // GET all extra time records
