@@ -13,6 +13,8 @@ import { Leaves }            from './pages/Leaves';
 import { Overtime }          from './pages/Overtime';
 import { Salary }            from './pages/Salary';
 import { EmployeeDashboard } from './pages/EmployeeDashboard';
+import { ExtraTime }         from './pages/ExtraTime';
+import { Loans }             from './pages/Loans';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,6 +33,8 @@ const ADMIN_PAGES = {
   leaves:     Leaves,
   overtime:   Overtime,
   salary:     Salary,
+  extratime:  ExtraTime,
+  loans:      Loans,
 };
 
 function AppShell() {
@@ -41,7 +45,6 @@ function AppShell() {
   if (loading) return <Spinner fullPage />;
   if (!user)   return <Login />;
 
-  // Employee sees their own dashboard
   if (user.type === 'employee') {
     return (
       <>
@@ -51,7 +54,6 @@ function AppShell() {
     );
   }
 
-  // Admin sees full ERP
   const PageComponent = ADMIN_PAGES[page] || Dashboard;
   return (
     <>

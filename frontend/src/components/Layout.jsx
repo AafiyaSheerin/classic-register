@@ -7,6 +7,8 @@ const NAV = [
   { id: 'attendance', label: 'Attendance', icon: '📅' },
   { id: 'leaves',     label: 'Leaves',     icon: '📋' },
   { id: 'overtime',   label: 'Overtime',   icon: '⏰' },
+  { id: 'extratime',  label: 'Extra Time', icon: '⏱️' },
+  { id: 'loans',      label: 'Loans',      icon: '💳' },
   { id: 'salary',     label: 'Salary',     icon: '💰' },
 ];
 
@@ -24,16 +26,10 @@ function Sidebar({ page, setPage }) {
       }}>
         <span style={{ fontSize: 28, lineHeight: 1 }}>🪡</span>
         <div>
-          <div style={{
-            color: '#fff', fontWeight: 800,
-            fontSize: 15, lineHeight: 1,
-          }}>
+          <div style={{ color: '#fff', fontWeight: 800, fontSize: 15, lineHeight: 1 }}>
             Classic Register
           </div>
-          <div style={{
-            color: 'rgba(255,255,255,0.45)',
-            fontSize: 11, marginTop: 3,
-          }}>
+          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11, marginTop: 3 }}>
             Embroidery ERP
           </div>
         </div>
@@ -50,15 +46,9 @@ function Sidebar({ page, setPage }) {
                 display: 'flex', alignItems: 'center', gap: 12,
                 width: '100%', padding: '11px 20px',
                 border: 'none',
-                borderLeft: active
-                  ? '3px solid #fff'
-                  : '3px solid transparent',
-                background: active
-                  ? 'rgba(255,255,255,0.14)'
-                  : 'transparent',
-                color: active
-                  ? '#fff'
-                  : 'rgba(255,255,255,0.62)',
+                borderLeft: active ? '3px solid #fff' : '3px solid transparent',
+                background: active ? 'rgba(255,255,255,0.14)' : 'transparent',
+                color: active ? '#fff' : 'rgba(255,255,255,0.62)',
                 cursor: 'pointer', fontSize: 14,
                 fontWeight: active ? 600 : 400,
                 textAlign: 'left', transition: 'all 0.15s',
@@ -78,7 +68,7 @@ function Sidebar({ page, setPage }) {
         color: 'rgba(255,255,255,0.35)',
         textAlign: 'center',
       }}>
-        v1.0 · Classic Register ERP
+        v1.1 · Classic Register ERP
       </div>
     </aside>
   );
@@ -118,10 +108,7 @@ export function Layout({ page, setPage, children }) {
           </div>
         </header>
 
-        <main style={{
-          flex: 1, overflowY: 'auto',
-          padding: '28px 28px 40px',
-        }}>
+        <main style={{ flex: 1, overflowY: 'auto', padding: '28px 28px 40px' }}>
           {children}
         </main>
       </div>
