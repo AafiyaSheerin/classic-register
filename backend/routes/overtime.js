@@ -1,10 +1,10 @@
 // routes/overtime.js — custom amount, no fixed rate
 const router = require('express').Router();
 const pool = require('../db/connection');
-const { authenticate } = require('../middleware/auth');
+const { authenticateToken } = require('../middleware/auth');
 
 // GET all overtime records
-router.get('/', authenticate, async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   try {
     const { employee_id, month, year } = req.query;
     let query = `
@@ -28,7 +28,7 @@ router.get('/', authenticate, async (req, res) => {
 });
 
 // POST add overtime
-router.post('/', authenticate, async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
   try {
     const { employee_id, date, hours, amount, notes } = req.body;
     if (!employee_id || !date || !amount) {
@@ -57,7 +57,7 @@ router.post('/', authenticate, async (req, res) => {
 });
 
 // PUT update overtime
-router.put('/:id', authenticate, async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { hours, amount, notes, date } = req.body;
     await pool.execute(
@@ -71,7 +71,7 @@ router.put('/:id', authenticate, async (req, res) => {
 });
 
 // DELETE overtime
-router.delete('/:id', authenticate, async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     await pool.execute('DELETE FROM overtime WHERE id=?', [req.params.id]);
     res.json({ success: true, message: 'Overtime deleted' });

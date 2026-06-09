@@ -1,10 +1,10 @@
 // routes/extratime.js
 const router = require('express').Router();
 const pool = require('../db/connection');
-const { authenticate } = require('../middleware/auth');
+const { authenticateToken } = require('../middleware/auth');
 
 // GET all extra time records
-router.get('/', authenticate, async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   try {
     const { employee_id, month, year } = req.query;
     let query = `
@@ -28,7 +28,7 @@ router.get('/', authenticate, async (req, res) => {
 });
 
 // POST add extra time
-router.post('/', authenticate, async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
   try {
     const { employee_id, date, hours, amount, notes } = req.body;
     if (!employee_id || !date || !amount) {
@@ -45,7 +45,7 @@ router.post('/', authenticate, async (req, res) => {
 });
 
 // PUT update extra time
-router.put('/:id', authenticate, async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { hours, amount, notes, date } = req.body;
     await pool.execute(
@@ -59,7 +59,7 @@ router.put('/:id', authenticate, async (req, res) => {
 });
 
 // DELETE extra time
-router.delete('/:id', authenticate, async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     await pool.execute('DELETE FROM extra_time WHERE id=?', [req.params.id]);
     res.json({ success: true, message: 'Extra time deleted' });
