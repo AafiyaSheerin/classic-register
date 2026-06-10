@@ -8,7 +8,7 @@ function getWorkingDays(month, year) {
   return count;
 }
 
-function calculateSalary(employee, attendance, overtime, workingDays) {
+function calculateSalary(employee, attendance, overtime, workingDays, extratime = { total_et_pay: 0, total_et_hours: 0 }) {
   const bp = parseFloat(employee.base_pay);
   const {
     present_days = 0,
@@ -19,47 +19,39 @@ function calculateSalary(employee, attendance, overtime, workingDays) {
     pieces_completed = 0,
   } = attendance;
 
-  const {
-    total_ot_hours      = 0,
-    total_ot_pieces     = 0,
-    avg_rate_multiplier = 1.5,
-  } = overtime;
+  // Use direct user-entered amounts from overtime and extratime records
+  const overtime_pay = parseFloat(overtime.total_ot_pay) || 0;
+  const extratime_pay = parseFloat(extratime.total_et_pay) || 0;
 
   let base_earned     = 0;
-  let overtime_pay    = 0;
   let leave_deduction = 0;
 
   switch (employee.salary_type) {
     case 'monthly': {
       const daily  = bp / workingDays;
-      const hourly = bp / (workingDays * 8);
       leave_deduction = absent_days * daily;
       const effective = present_days + half_days * 0.5 + leave_days;
       base_earned     = Math.min(bp, effective * daily);
-      overtime_pay    = total_ot_hours * hourly * avg_rate_multiplier;
       break;
     }
     case 'daily': {
       const effective = present_days + half_days * 0.5;
       base_earned     = effective * bp;
-      overtime_pay    = total_ot_hours * (bp / 8) * avg_rate_multiplier;
       break;
     }
     case 'hourly': {
       base_earned  = total_hours * bp;
-      overtime_pay = total_ot_hours * bp * avg_rate_multiplier;
       break;
     }
     case 'piece': {
       base_earned  = pieces_completed * bp;
-      overtime_pay = total_ot_pieces * bp * avg_rate_multiplier;
       break;
     }
     default:
       base_earned = bp;
   }
 
-  const gross = base_earned + overtime_pay;
+  const gross = base_earned + overtime_pay + extratime_pay;
   const net   = Math.max(0, gross - leave_deduction);
 
   return {
@@ -67,6 +59,7 @@ function calculateSalary(employee, attendance, overtime, workingDays) {
     base_pay:         round2(bp),
     base_earned:      round2(base_earned),
     overtime_pay:     round2(overtime_pay),
+    extratime_pay:    round2(extratime_pay),
     leave_deduction:  round2(leave_deduction),
     gross_salary:     round2(gross),
     net_salary:       round2(net),
@@ -76,8 +69,9 @@ function calculateSalary(employee, attendance, overtime, workingDays) {
     absent_days,
     total_hours:      round2(total_hours),
     pieces_completed: parseInt(pieces_completed),
-    total_ot_hours:   round2(total_ot_hours),
-    total_ot_pieces:  parseInt(total_ot_pieces),
+    total_ot_hours:   round2(overtime.total_ot_hours || 0),
+    total_ot_pieces:  parseInt(overtime.total_ot_pieces || 0),
+    total_et_hours:   round2(extratime.total_et_hours || 0),
     working_days:     workingDays,
   };
 }

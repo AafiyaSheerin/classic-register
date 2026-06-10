@@ -69,6 +69,9 @@ function printPayslip(emp, salary, month, year) {
   ${salary.overtime_pay > 0
     ? `<tr><td class="label">Overtime Pay</td>
        <td class="value addition">+ ${fmtMoney(salary.overtime_pay)}</td></tr>` : ''}
+  ${salary.extratime_pay > 0
+    ? `<tr><td class="label">Extra Time Pay</td>
+       <td class="value addition">+ ${fmtMoney(salary.extratime_pay)}</td></tr>` : ''}
   <tr style="border-top:1px solid #e2e8f0">
     <td class="label" style="padding-top:10px"><strong>Gross Salary</strong></td>
     <td class="value" style="padding-top:10px"><strong>${fmtMoney(salary.gross_salary)}</strong></td>
@@ -157,6 +160,8 @@ function PayslipModal({ open, onClose, data, month, year, toast }) {
         <Row label="Base Earned"  value={fmtMoney(salary.base_earned)}  color={C.success} />
         {salary.overtime_pay > 0 &&
           <Row label="Overtime Pay" value={`+ ${fmtMoney(salary.overtime_pay)}`} color={C.success} />}
+        {salary.extratime_pay > 0 &&
+          <Row label="Extra Time Pay" value={`+ ${fmtMoney(salary.extratime_pay)}`} color={C.success} />}
         <Row label="Gross Salary" value={fmtMoney(salary.gross_salary)} bold />
         {salary.leave_deduction > 0 &&
           <Row label="Deduction" value={`− ${fmtMoney(salary.leave_deduction)}`} color={C.danger} />}
@@ -245,6 +250,14 @@ export function Salary({ toast }) {
       cell: ({ row: { original: r } }) => (
         <span style={{ color: r.salary.overtime_pay > 0 ? C.success : C.muted }}>
           {r.salary.overtime_pay > 0 ? `+${fmtMoney(r.salary.overtime_pay)}` : '—'}
+        </span>
+      ),
+    },
+    {
+      id: 'et', header: 'Extra Time',
+      cell: ({ row: { original: r } }) => (
+        <span style={{ color: r.salary.extratime_pay > 0 ? C.success : C.muted }}>
+          {r.salary.extratime_pay > 0 ? `+${fmtMoney(r.salary.extratime_pay)}` : '—'}
         </span>
       ),
     },

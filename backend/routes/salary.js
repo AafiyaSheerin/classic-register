@@ -25,12 +25,25 @@ async function fetchOvertime(empId, m, y) {
   const [[row]] = await db.query(
     `SELECT
        COALESCE(SUM(hours),0)            AS total_ot_hours,
-       COALESCE(SUM(pieces_completed),0) AS total_ot_pieces
+       COALESCE(SUM(pieces_completed),0) AS total_ot_pieces,
+       COALESCE(SUM(amount),0)           AS total_ot_pay
      FROM overtime
      WHERE employee_id=? AND MONTH(date)=? AND YEAR(date)=?`,
     [empId, m, y]
   );
-  return { ...row, avg_rate_multiplier: 1.5 };
+  return row;
+}
+
+async function fetchExtraTime(empId, m, y) {
+  const [[row]] = await db.query(
+    `SELECT
+       COALESCE(SUM(hours),0)  AS total_et_hours,
+       COALESCE(SUM(amount),0) AS total_et_pay
+     FROM extra_time
+     WHERE employee_id=? AND MONTH(date)=? AND YEAR(date)=?`,
+    [empId, m, y]
+  );
+  return row;
 }
 
 async function fetchPieces(empId, m, y) {
@@ -71,8 +84,9 @@ router.get('/dashboard', async (req, res) => {
     for (const emp of activeEmps) {
       const att    = await fetchAttendance(emp.id, m, y);
       const ot     = await fetchOvertime(emp.id, m, y);
+      const et     = await fetchExtraTime(emp.id, m, y);
       const pieces = await fetchPieces(emp.id, m, y);
-      const sal    = calculateSalary(emp, { ...att, pieces_completed: pieces }, ot, wd);
+      const sal    = calculateSalary(emp, { ...att, pieces_completed: pieces }, ot, wd, et);
       monthlyExpense += sal.net_salary;
     }
 
@@ -111,9 +125,10 @@ router.get('/calculate/:employee_id', async (req, res) => {
     if (!emp) return fail(res, 'Employee not found.', 404);
     const att    = await fetchAttendance(emp.id, m, y);
     const ot     = await fetchOvertime(emp.id, m, y);
+    const et     = await fetchExtraTime(emp.id, m, y);
     const pieces = await fetchPieces(emp.id, m, y);
     const wd     = getWorkingDays(m, y);
-    const salary = calculateSalary(emp, { ...att, pieces_completed: pieces }, ot, wd);
+    const salary = calculateSalary(emp, { ...att, pieces_completed: pieces }, ot, wd, et);
     return ok(res, {
       employee: { id: emp.id, name: emp.name, employee_id: emp.employee_id, role: emp.role },
       month: m, year: y, working_days_in_month: wd, salary,
@@ -135,8 +150,9 @@ router.get('/payroll', async (req, res) => {
     for (const emp of employees) {
       const att    = await fetchAttendance(emp.id, m, y);
       const ot     = await fetchOvertime(emp.id, m, y);
+      const et     = await fetchExtraTime(emp.id, m, y);
       const pieces = await fetchPieces(emp.id, m, y);
-      const salary = calculateSalary(emp, { ...att, pieces_completed: pieces }, ot, wd);
+      const salary = calculateSalary(emp, { ...att, pieces_completed: pieces }, ot, wd, et);
       totalExpense += salary.net_salary;
       payroll.push({
         employee: {
@@ -167,16 +183,17 @@ router.post('/log', async (req, res) => {
     await db.query(
       `INSERT INTO salary_logs
          (employee_id,month,year,base_pay,days_worked,hours_worked,
-          pieces_completed,overtime_pay,leave_deduction,
+          pieces_completed,overtime_pay,extratime_pay,leave_deduction,
           gross_salary,net_salary,status,notes)
        VALUES (?,?,?,?,?,?,?,?,?,?,?,'paid',?)
        ON DUPLICATE KEY UPDATE
          base_pay=VALUES(base_pay), days_worked=VALUES(days_worked),
-         overtime_pay=VALUES(overtime_pay), leave_deduction=VALUES(leave_deduction),
+         overtime_pay=VALUES(overtime_pay), extratime_pay=VALUES(extratime_pay),
+         leave_deduction=VALUES(leave_deduction),
          gross_salary=VALUES(gross_salary), net_salary=VALUES(net_salary),
          status='paid', notes=VALUES(notes)`,
       [employee_id, month, year, s.base_pay, s.present_days,
-       s.total_hours, s.pieces_completed, s.overtime_pay,
+       s.total_hours, s.pieces_completed, s.overtime_pay, s.extratime_pay,
        s.leave_deduction, s.gross_salary, s.net_salary, notes||null]
     );
     return ok(res, null, 'Salary marked as paid.');

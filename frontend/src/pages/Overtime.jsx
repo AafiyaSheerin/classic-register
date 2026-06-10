@@ -23,8 +23,8 @@ export function Overtime({ toast }) {
 
   const listQ = useQuery({
     queryKey: ['ot-list', month, year],
-    queryFn:  () => api.get('/overtime', { params: { month, year } }).then(r => r.data.data),
-    staleTime: 20_000,
+    queryFn:  () => api.get(`/overtime?month=${month}&year=${year}`).then(r => r.data),
+    staleTime: 0,
   });
 
   const empsQ = useQuery({
@@ -39,7 +39,8 @@ export function Overtime({ toast }) {
   const saveMut = useMutation({
     mutationFn: body => api.post('/overtime', body),
     onSuccess: r => {
-      qc.invalidateQueries(['ot-list']);
+      // ✅ FIXED: use object syntax so React Query v5 does partial key invalidation
+      qc.invalidateQueries({ queryKey: ['ot-list'], refetchType: 'all' });
       setShowModal(false);
       setForm(EMPTY_FORM);
       toast(r.data?.message || 'Overtime saved.', 'success');
@@ -50,7 +51,8 @@ export function Overtime({ toast }) {
   const delMut = useMutation({
     mutationFn: id => api.delete(`/overtime/${id}`),
     onSuccess: () => {
-      qc.invalidateQueries(['ot-list']);
+      // ✅ FIXED: use object syntax so React Query v5 does partial key invalidation
+      qc.invalidateQueries({ queryKey: ['ot-list'], refetchType: 'all' });
       toast('Record deleted.', 'success');
     },
     onError: err => toast(err.message, 'error'),
@@ -215,3 +217,5 @@ export function Overtime({ toast }) {
     </div>
   );
 }
+
+export default Overtime;
