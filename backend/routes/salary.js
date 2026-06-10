@@ -1,6 +1,6 @@
 const express = require('express');
-const router  = express.Router();
-const db      = require('../db/connection');
+const router = express.Router();
+const db = require('../db/connection');
 const { authenticateToken } = require('../middleware/auth');
 const { ok, fail, getWorkingDays, calculateSalary } = require('../utils/helpers');
 
@@ -82,11 +82,11 @@ router.get('/dashboard', async (req, res) => {
     const wd = getWorkingDays(m, y);
     let monthlyExpense = 0;
     for (const emp of activeEmps) {
-      const att    = await fetchAttendance(emp.id, m, y);
-      const ot     = await fetchOvertime(emp.id, m, y);
-      const et     = await fetchExtraTime(emp.id, m, y);
+      const att = await fetchAttendance(emp.id, m, y);
+      const ot = await fetchOvertime(emp.id, m, y);
+      const et = await fetchExtraTime(emp.id, m, y);
       const pieces = await fetchPieces(emp.id, m, y);
-      const sal    = calculateSalary(emp, { ...att, pieces_completed: pieces }, ot, wd, et);
+      const sal = calculateSalary(emp, { ...att, pieces_completed: pieces }, ot, wd, et);
       monthlyExpense += sal.net_salary;
     }
 
@@ -105,10 +105,10 @@ router.get('/dashboard', async (req, res) => {
     );
 
     return ok(res, {
-      total_employees:  total,
+      total_employees: total,
       today_attendance: todayAtt,
-      monthly_expense:  Math.round(monthlyExpense * 100) / 100,
-      absence_alerts:   alerts,
+      monthly_expense: Math.round(monthlyExpense * 100) / 100,
+      absence_alerts: alerts,
       pending_leaves,
     });
   } catch (err) {
@@ -120,14 +120,14 @@ router.get('/dashboard', async (req, res) => {
 router.get('/calculate/:employee_id', async (req, res) => {
   try {
     const m = parseInt(req.query.month) || new Date().getMonth() + 1;
-    const y = parseInt(req.query.year)  || new Date().getFullYear();
+    const y = parseInt(req.query.year) || new Date().getFullYear();
     const [[emp]] = await db.query('SELECT * FROM employees WHERE id=?', [req.params.employee_id]);
     if (!emp) return fail(res, 'Employee not found.', 404);
-    const att    = await fetchAttendance(emp.id, m, y);
-    const ot     = await fetchOvertime(emp.id, m, y);
-    const et     = await fetchExtraTime(emp.id, m, y);
+    const att = await fetchAttendance(emp.id, m, y);
+    const ot = await fetchOvertime(emp.id, m, y);
+    const et = await fetchExtraTime(emp.id, m, y);
     const pieces = await fetchPieces(emp.id, m, y);
-    const wd     = getWorkingDays(m, y);
+    const wd = getWorkingDays(m, y);
     const salary = calculateSalary(emp, { ...att, pieces_completed: pieces }, ot, wd, et);
     return ok(res, {
       employee: { id: emp.id, name: emp.name, employee_id: emp.employee_id, role: emp.role },
@@ -142,15 +142,15 @@ router.get('/calculate/:employee_id', async (req, res) => {
 router.get('/payroll', async (req, res) => {
   try {
     const m = parseInt(req.query.month) || new Date().getMonth() + 1;
-    const y = parseInt(req.query.year)  || new Date().getFullYear();
+    const y = parseInt(req.query.year) || new Date().getFullYear();
     const [employees] = await db.query("SELECT * FROM employees WHERE status='active'");
     const wd = getWorkingDays(m, y);
     const payroll = [];
     let totalExpense = 0;
     for (const emp of employees) {
-      const att    = await fetchAttendance(emp.id, m, y);
-      const ot     = await fetchOvertime(emp.id, m, y);
-      const et     = await fetchExtraTime(emp.id, m, y);
+      const att = await fetchAttendance(emp.id, m, y);
+      const ot = await fetchOvertime(emp.id, m, y);
+      const et = await fetchExtraTime(emp.id, m, y);
       const pieces = await fetchPieces(emp.id, m, y);
       const salary = calculateSalary(emp, { ...att, pieces_completed: pieces }, ot, wd, et);
       totalExpense += salary.net_salary;
@@ -193,8 +193,8 @@ router.post('/log', async (req, res) => {
          gross_salary=VALUES(gross_salary), net_salary=VALUES(net_salary),
          status='paid', notes=VALUES(notes)`,
       [employee_id, month, year, s.base_pay, s.present_days,
-       s.total_hours, s.pieces_completed, s.overtime_pay, s.extratime_pay,
-       s.leave_deduction, s.gross_salary, s.net_salary, notes||null]
+        s.total_hours, s.pieces_completed, s.overtime_pay, s.extratime_pay,
+        s.leave_deduction, s.gross_salary, s.net_salary, notes || null]
     );
     return ok(res, null, 'Salary marked as paid.');
   } catch (err) {
@@ -212,8 +212,8 @@ router.get('/logs', async (req, res) => {
       WHERE 1=1`;
     const p = [];
     if (employee_id) { sql += ' AND sl.employee_id=?'; p.push(employee_id); }
-    if (month)       { sql += ' AND sl.month=?';        p.push(month); }
-    if (year)        { sql += ' AND sl.year=?';         p.push(year); }
+    if (month) { sql += ' AND sl.month=?'; p.push(month); }
+    if (year) { sql += ' AND sl.year=?'; p.push(year); }
     sql += ' ORDER BY sl.year DESC, sl.month DESC';
     const [rows] = await db.query(sql, p);
     return ok(res, rows);
