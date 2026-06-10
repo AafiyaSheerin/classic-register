@@ -13,8 +13,10 @@ import { Leaves }            from './pages/Leaves';
 import { Overtime }          from './pages/Overtime';
 import { Salary }            from './pages/Salary';
 import { EmployeeDashboard } from './pages/EmployeeDashboard';
-import { ExtraTime }         from './pages/ExtraTime';
-import { Loans }             from './pages/Loans';
+import { ExtraTime }         from './pages/Extratime';
+import { Loans }             from './pages/loans';
+
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
